@@ -12,6 +12,12 @@ class MemoryMemberRepositoryTest {
 
     MemoryMemberRepository repository = new MemoryMemberRepository();
 
+    @AfterEach
+    public void afterEach() { //메서드가 실행이 끝날 때마다 어떤 동작을 한다. -> 콜백 메서드
+        //테스트는 순서대로 실행되기 때문에 서로 순서와 관계없이 설계를 해야한다.
+        repository.clearStore(); //하나의 테스트 끝나고 공용 저장소를 다 지워야 문제가 없음
+    }
+
     @Test
     public void save() {
         Member member = new Member();
