@@ -43,8 +43,7 @@ public class AppConfig { //구성정보
     @Bean
     public OrderService orderService() { //역할
         System.out.println("call AppConfig.orderService");
-//        return new OrderServiceImpl(memberRepository(), discountPolicy()); //구현
-        return null;
+        return new OrderServiceImpl(memberRepository(), discountPolicy()); //구현
     }
 
     @Bean

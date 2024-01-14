@@ -14,7 +14,6 @@ import org.springframework.context.annotation.FilterType;
         //Configuration.class를 빼주는 이유는 AppConfig, TestConfig 클래스를 등록하지 않기 위해서! -> 기존 예제 코드를 유지하기 위함
 )
 public class AutoAppConfig {
-
 //    @Bean(name = "memoryMemberRepository")
 //    MemberRepository memberRepository() {
 //        return new MemoryMemberRepository();
