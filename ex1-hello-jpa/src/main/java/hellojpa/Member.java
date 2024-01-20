@@ -2,9 +2,10 @@ package hellojpa;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity //JPA가 로딩될 때 JPA가 관리해야겠다고 인식
-//@Table(name = "USER") // USER 테이블과 자동 매핑 : 기본값은 클래스명
+@Table(name = "USER") //데이터베이스 USER 테이블과 자동 매핑 : 기본값은 클래스명, 예를 들어 쿼리가 from USER 이렇게 바뀜
 public class Member {
 
     @Id
