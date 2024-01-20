@@ -21,22 +21,10 @@ public class JpaMain {
         tx.begin();
         try {
 
-//            //비영속
-//            Member member = new Member();
-//            member.setId(101L);
-//            member.setName("HelloJPA");
-//
-//            //영속
-//            em.persist(member);
+            Member member = new Member(201L, "member200");
+            em.persist(member);
 
-//            Member member1 = new Member(150L, "A");
-//            Member member2 = new Member(160L, "B");
-//            em.persist(member1);
-//            em.persist(member2);
-            Member member = em.find(Member.class, 150L);
-            member.setName("ZZZZZ");
-
-//            em.persist(member); //호출해야 하는거 아니야? X
+//            em.flush();
 
             System.out.println("============");
 
