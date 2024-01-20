@@ -21,14 +21,10 @@ public class JpaMain {
         tx.begin();
         try {
 
-            Member member = em.find(Member.class, 150L);
-            member.setName("AAAAA");
-
-            em.clear();
-
-            Member member2 = em.find(Member.class, 150L);
-
-            System.out.println("============");
+            Member member = new Member();
+            member.setId(1L);
+            member.setUsername("A");
+            member.setRoleType(RoleType.GUEST);
 
             tx.commit(); //여기서 문제가 생기면 close() 두 개가 호출이 되지 않아 좋지 않은 코드임 -> try-catch
         } catch (Exception e) {
