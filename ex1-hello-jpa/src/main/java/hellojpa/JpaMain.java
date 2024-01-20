@@ -20,35 +20,26 @@ public class JpaMain {
 
         tx.begin();
         try {
-            //1. 회원 등록(저장)
+
+//            //비영속
 //            Member member = new Member();
-//            member.setId(2L);
-//            member.setName("HelloB");
+//            member.setId(101L);
+//            member.setName("HelloJPA");
+//
+//            //영속
 //            em.persist(member);
 
-            //2. 회원 수정
-            /**
-             * 업데이트를 하고 다시 persist를 해야하나? No!
-             * JPA를 통해서 Entity를 가져오면 이게 변경이 되었는지 안 되었는지 트랜잭션 commit 하는 시점에 확인을 하고,
-             * 바뀐걸 감지하면 Update 쿼리 날리고 트랜잭션 commit 함
-             */
-//            Member findMember = em.find(Member.class, 1L); //3. 회원 조회: find(엔티티 클래스, PK)
-//            findMember.setName("HelloJPA");
+//            Member member1 = new Member(150L, "A");
+//            Member member2 = new Member(160L, "B");
+//            em.persist(member1);
+//            em.persist(member2);
+            Member member = em.find(Member.class, 150L);
+            member.setName("ZZZZZ");
 
-            //3. JPQL로 전체 회원 조회 : 범위 질의는 JPQL로 한다.
-            /**
-             * JPA입장에선, 코드를 짤 때 테이블 대상으로 짜지 않고, Member 객체를 대상으로 쿼리함. 대상이 table이 아니고 객체를 대상으로 쿼리함
-             * Member 객체를 다 가져와라.
-             * select하고 필드를 다 나열했어. m을 select 했는데, 이 m은 JPQL은 멤버 엔티티를 선택한 것이다.
-             */
-            List<Member> result = em.createQuery("select m from Member as m", Member.class)
-                    .setFirstResult(0)//0번부터 1개가져와
-                    .setMaxResults(1)
-                    .getResultList();
+//            em.persist(member); //호출해야 하는거 아니야? X
 
-            for (Member member : result) {
-                System.out.println("member.getName() = " + member.getName());
-            }
+            System.out.println("============");
+
             tx.commit(); //여기서 문제가 생기면 close() 두 개가 호출이 되지 않아 좋지 않은 코드임 -> try-catch
         } catch (Exception e) {
             tx.rollback();

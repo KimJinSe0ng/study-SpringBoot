@@ -12,6 +12,14 @@ public class Member {
 //    @Column(name = "username") // username 컬럼과 자동 매핑 : 기본값은 변수명
     private String name;
 
+    public Member() { //JPA는 기본 생성자가 필수 - 동적으로 객체를 생성해야하는 경우가 있음
+    }
+
+    public Member(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
