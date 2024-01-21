@@ -33,7 +33,7 @@ public class Member {
 //    private Long teamId;
     @ManyToOne
     @JoinColumn(name = "TEAM_ID") //Member 객체의 Team team 레퍼런스와 MEMBER 테이블의 TEAM_ID(FK)와 매핑해야 함
-    private Team team; //JPA에게 이 둘의(Member, Team) 관계가 1:다 인지 다:1 인지 알려줘야 함
+    private Team team; //JPA에게 이 둘의(Member, Team) 관계가 1:다 인지 다:1 인지 알려줘야 함, 연관관계의 주인
 
     public Long getId() {
         return id;
