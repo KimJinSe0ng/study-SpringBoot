@@ -21,10 +21,25 @@ public class JpaMain {
         tx.begin();
         try {
 
-            Member member = new Member();
-            member.setId(1L);
-            member.setUsername("A");
-            member.setRoleType(RoleType.GUEST);
+            Member member1 = new Member();
+            member1.setUsername("A");
+
+            Member member2 = new Member();
+            member1.setUsername("B");
+
+            Member member3 = new Member();
+            member1.setUsername("C");
+
+            System.out.println("==============");
+            em.persist(member1); //1, 51
+            em.persist(member2); //DB가 아니라 MEM에서 호출
+            em.persist(member3); //DB가 아니라 MEM에서 호출
+            //51을 만나야 next call 발생
+
+            System.out.println("member1 = " + member1.getId());
+            System.out.println("member2 = " + member2.getId());
+            System.out.println("member3 = " + member3.getId());
+            System.out.println("==============");
 
             tx.commit(); //여기서 문제가 생기면 close() 두 개가 호출이 되지 않아 좋지 않은 코드임 -> try-catch
         } catch (Exception e) {
