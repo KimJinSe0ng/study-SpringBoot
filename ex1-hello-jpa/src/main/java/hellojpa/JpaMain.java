@@ -25,26 +25,26 @@ public class JpaMain {
             team.setName("TeamA");
             em.persist(team);
 
-            // 연관관계 저장
             Member member = new Member();
             member.setUsername("member1");
-            member.setTeam(team); // JPA가 알아서 팀에서 PK값을 꺼내서 FK값에 Insert할 때 FK값을 사용한다, 단방향 연관관계 설정, 참조 저장
+//            member.changeTeam(team); //연관관계 편의 메서드
             em.persist(member);
 
-            em.flush();
-            em.clear();
+            team.addMember(member); //연관관계 편의 메서드
 
-            // 참조를 사용해서 연관관계 조회
-            Member findMember = em.find(Member.class, member.getId()); // 조회도 문제가 된다. 연관관계가 없어서 객체지향적이지 않음
-            List<Member> members = findMember.getTeam().getMembers();
+//            team.getMembers().add(member); //실수: 연관관계의 주인에 값을 입력하지 않음 - 역방향(주인이 아닌 방향)만 연관관계 설정 -> member.setTeam()으로 이동
 
+//            em.flush();
+//            em.clear();
+
+            Team findTeam = em.find(Team.class, team.getId()); //1차 캐시
+            List<Member> members = findTeam.getMembers();
+
+            System.out.println("==============");
             for (Member m : members) {
-                System.out.println("m = " + m.getUsername());
+                System.out.println("m.getUsername() = " + m.getUsername());
             }
-
-            // 연관관계 수정
-//            Team newTeam = em.find(Team.class, 100L); // DB에 100번 팀이 있다고 가정하고, 팀을 바꿔주면 FK가 업데이트 된다.
-//            findMember.setTeam(newTeam);
+            System.out.println("==============");
 
             tx.commit(); //여기서 문제가 생기면 close() 두 개가 호출이 되지 않아 좋지 않은 코드임 -> try-catch
         } catch (Exception e) {
