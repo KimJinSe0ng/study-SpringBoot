@@ -26,12 +26,6 @@ public class Member {
     @Column(name = "USERNAME") //DB 컬럼명은 name 이야 하면 name으로 Insert 함
     private String username;
 
-//    @Column(name = "TEAM_ID")
-//    private Long teamId;
-    @ManyToOne
-    @JoinColumn(name = "TEAM_ID") //Member 객체의 Team team 레퍼런스와 MEMBER 테이블의 TEAM_ID(FK)와 매핑해야 함
-    private Team team; //JPA에게 이 둘의(Member, Team) 관계가 1:다 인지 다:1 인지 알려줘야 함, 연관관계의 주인
-
     public Long getId() {
         return id;
     }
@@ -48,16 +42,4 @@ public class Member {
         this.username = username;
     }
 
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
-    }
-
-    //    public void changeTeam(Team team) { //연관관계 편의 메서드
-//        this.team = team;
-//        team.getMembers().add(this);
-//    }
 }
