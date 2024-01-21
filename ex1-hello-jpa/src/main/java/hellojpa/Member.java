@@ -13,23 +13,27 @@ import java.util.Date;
 //        table = "MY_SEQUENCE",
 //        pkColumnValue = "MEMBER_SEQ", allocationSize = 1
 //)
-@SequenceGenerator(
-        name = "MEMBER_SEQ_GENERATOR",
-        sequenceName = "MEMBER_SEQ", //매핑할 데이터베이스 시퀀스 이름
-        initialValue = 1, allocationSize = 50)
+//@SequenceGenerator(
+//        name = "MEMBER_SEQ_GENERATOR",
+//        sequenceName = "MEMBER_SEQ", //매핑할 데이터베이스 시퀀스 이름
+//        initialValue = 1, allocationSize = 50)
 public class Member {
 
     @Id
 //    @GeneratedValue(strategy = GenerationType.TABLE, generator = "MEMBER_SEQ_GENERATOR")
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MEMBER_SEQ_GENERATOR")
+    @GeneratedValue
+    @Column(name = "MEMBER_ID")
     private Long id;
 
-    @Column(name = "name", nullable = false) //DB 컬럼명은 name 이야 하면 name으로 Insert 함
+    @Column(name = "USERNAME") //DB 컬럼명은 name 이야 하면 name으로 Insert 함
     private String username;
 
-    public Member() { //JPA는 기본적으로 내부적으로 리플렉션도 쓰기 때문에 동적으로 객체를 생성해내기 때문에 기본 생성자 필요
-    }
+//    @Column(name = "TEAM_ID")
+//    private Long teamId;
+    @ManyToOne
+    @JoinColumn(name = "TEAM_ID") //Member 객체의 Team team 레퍼런스와 MEMBER 테이블의 TEAM_ID(FK)와 매핑해야 함
+    private Team team; //JPA에게 이 둘의(Member, Team) 관계가 1:다 인지 다:1 인지 알려줘야 함
 
     public Long getId() {
         return id;
@@ -45,5 +49,13 @@ public class Member {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 }

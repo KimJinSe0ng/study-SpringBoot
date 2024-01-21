@@ -21,25 +21,30 @@ public class JpaMain {
         tx.begin();
         try {
 
-            Member member1 = new Member();
-            member1.setUsername("A");
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
 
-            Member member2 = new Member();
-            member1.setUsername("B");
+            // 연관관계 저장
+            Member member = new Member();
+            member.setUsername("member1");
+//            member.setTeamId(team.getId()); // 이 부분이 애매하다. 외래키 식별자를 직접 다룸, 객체지향적이지 않음
+            member.setTeam(team); // JPA가 알아서 팀에서 PK값을 꺼내서 FK값에 Insert할 때 FK값을 사용한다, 단방향 연관관계 설정, 참조 저장
+            em.persist(member);
 
-            Member member3 = new Member();
-            member1.setUsername("C");
+            em.flush();
+            em.clear();
 
-            System.out.println("==============");
-            em.persist(member1); //1, 51
-            em.persist(member2); //DB가 아니라 MEM에서 호출
-            em.persist(member3); //DB가 아니라 MEM에서 호출
-            //51을 만나야 next call 발생
+            // 참조를 사용해서 연관관계 조회
+            Member findMember = em.find(Member.class, member.getId()); // 조회도 문제가 된다. 연관관계가 없어서 객체지향적이지 않음
+//            Long findTeamid = findMember.getTeamId();
+//            Team findTeam = em.find(Team.class, findTeamid);
+            Team findTeam = findMember.getTeam(); // 참조를 사용해서 연관관계 조회
+            System.out.println("findTeam = " + findTeam.getName());
 
-            System.out.println("member1 = " + member1.getId());
-            System.out.println("member2 = " + member2.getId());
-            System.out.println("member3 = " + member3.getId());
-            System.out.println("==============");
+            // 연관관계 수정
+            Team newTeam = em.find(Team.class, 100L); // DB에 100번 팀이 있다고 가정하고, 팀을 바꿔주면 FK가 업데이트 된다.
+            findMember.setTeam(newTeam);
 
             tx.commit(); //여기서 문제가 생기면 close() 두 개가 호출이 되지 않아 좋지 않은 코드임 -> try-catch
         } catch (Exception e) {
