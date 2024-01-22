@@ -1,11 +1,12 @@
 package hellojpa;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity //JPA가 로딩될 때 JPA가 관리해야겠다고 인식
-public class Member {
+public class Member extends BaseEntity{
 
     @Id
     @GeneratedValue
