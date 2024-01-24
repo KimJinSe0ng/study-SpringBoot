@@ -1,5 +1,7 @@
 package hellojpa;
 
+import org.hibernate.Hibernate;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -20,13 +22,52 @@ public class JpaMain {
 
         tx.begin();
         try {
-            Member member = new Member();
-            member.setUsername("user1");
 
-            em.persist(member);
+            //프록시 쿼리 확인
+//            Member member = new Member();
+//            member.setUsername("hello");
+//
+//            em.persist(member);
+//            em.flush();
+//            em.clear();
+//
+////            Member findMember = em.find(Member.class, member.getId());
+//            Member findMember = em.getReference(Member.class, member.getId()); //실제로 findMember를 실제 사용할 때 DB쿼리가 나감
+//            System.out.println("findMember.getId() = " + findMember.getId());
+//            System.out.println("findMember.getTeam() = " + findMember.getTeam());
+
+            //프록시 특징
+//            Member member1 = new Member();
+//            member1.setUsername("member1");
+//            em.persist(member1);
+//
+//            em.flush();
+//            em.clear();
+//
+//            Member refMember = em.getReference(Member.class, member1.getId());
+//            System.out.println("refMember = " + refMember.getClass()); //Proxy
+//
+//            Member findMember = em.find(Member.class, member1.getId());
+//            System.out.println("findMember = " + findMember.getClass()); //Member
+//
+//            System.out.println("refMember == findMember: " + (refMember == findMember)); //JPA는 어떻게든 이걸 맞춘다.
+
+            //영속성 컨텍스트의 도움을 받을 수 없는 준영속 상태일 때, 프록시를 초기화하면 문제 발생
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            em.persist(member1);
 
             em.flush();
             em.clear();
+
+            Member refMember = em.getReference(Member.class, member1.getId());
+            System.out.println("refMember = " + refMember.getClass()); //Proxy
+
+//            em.detach(refMember); //could not initialize proxy 에러 발생
+//
+            refMember.getUsername(); //하면 프록시 초기화 됨
+            Hibernate.initialize(refMember); //하면 프록시 강제 초기화
+            System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember)); //프록시 인스턴스 초기화 여부 확인
 
             tx.commit();
         } catch (Exception e) {
