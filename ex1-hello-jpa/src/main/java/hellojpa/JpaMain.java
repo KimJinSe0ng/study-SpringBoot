@@ -24,12 +24,25 @@ public class JpaMain {
         tx.begin();
         try {
 
-            Member member = new Member();
-            member.setUsername("hello");
-            member.setHomeAddress(new Address("city", "street", "zipcode"));
-            member.setWorkPeriod(new Period());
+            Address address = new Address("city", "street", "10000");
 
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setHomeAddress(address);
             em.persist(member);
+
+            Address newAddress = new Address("NewCity", address.getStreet(), address.getZipcode()); //불변 객체의 값을 수정하고 싶다면 통으로 다시 바꿔주는 것을 권장한다.
+            member.setHomeAddress(newAddress);
+
+            Address copyAddress = new Address(address.getCity(), address.getCity(), address.getZipcode());
+
+            Member member2 = new Member();
+            member2.setUsername("member2");
+            member2.setHomeAddress(copyAddress);
+            em.persist(member2);
+
+            member.getHomeAddress().setCity("newCity"); //1번째 멤버의 주소만 newCity로 바꾸고 싶어 -> 멤버1, 멤버2 둘다 바뀜: 사이드 이펙트로 버그 찾기 어려움
+            //한계: 복사해서 써야 하는데 실수로 복사를 하지 않고 썼다면? 컴파일러 레벨에서 막을 수 있는 방법이 없음 -> 불변 객체로 만들어서 해결해야 함
 
             tx.commit();
         } catch (Exception e) {
