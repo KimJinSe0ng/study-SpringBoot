@@ -8,6 +8,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -24,27 +25,39 @@ public class JpaMain {
         tx.begin();
         try {
 
-            Address address = new Address("city", "street", "10000");
-
             Member member = new Member();
             member.setUsername("member1");
-            member.setHomeAddress(address);
+            member.setHomeAddress(new Address("homeCity", "strret", "10000"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("피자");
+            member.getFavoriteFoods().add("족발");
+
+            member.getAddressHistory().add(new AddressEntity("old1", "street", "10000"));
+            member.getAddressHistory().add(new AddressEntity("old2", "street", "10000"));
+
             em.persist(member);
 
-            Address newAddress = new Address("NewCity", address.getStreet(), address.getZipcode()); //불변 객체의 값을 수정하고 싶다면 통으로 다시 바꿔주는 것을 권장한다.
-            member.setHomeAddress(newAddress);
+            em.flush();
+            em.clear();
+            System.out.println("=========== START ==============");
+            Member findMember = em.find(Member.class, member.getId());
 
-            Address copyAddress = new Address(address.getCity(), address.getCity(), address.getZipcode());
+            //값 타입 수정
+            //homeCity -> newCity
+//            findMember.getHomeAddress().setCity("newCity"); //사이드 이펙트 초래
+//            Address a = findMember.getHomeAddress();
+//            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getStreet())); //값 타입, 업데이트를 하는게 아니라 통째로 갈아 끼워 넣어야 한다.
+//
+//            //치킨 -> 한식 : 값 타입, 업데이트를 하는게 아니라 통째로 갈아 끼워 넣어야 한다.
+//            findMember.getFavoriteFoods().remove("치킨");
+//            findMember.getFavoriteFoods().add("한식");
 
-            Member member2 = new Member();
-            member2.setUsername("member2");
-            member2.setHomeAddress(copyAddress);
-            em.persist(member2);
+            //old1 -> new1
+//            findMember.getAddressHistory().remove(new Address("old1", "street", "10000")); //기본적으로 컬렉션은 대상을 찾을때 equals, hashCode를 사용한다.
+//            findMember.getAddressHistory().add(new Address("newCity1", "street", "10000")); //delete 1 , insert 2가 발생하는데, 데이터를 아예 새로 갈아 끼워넣는 것이다.
 
-//            member.getHomeAddress().setCity("newCity"); //1번째 멤버의 주소만 newCity로 바꾸고 싶어 -> 멤버1, 멤버2 둘다 바뀜: 사이드 이펙트로 버그 찾기 어려움
-            //한계: 복사해서 써야 하는데 실수로 복사를 하지 않고 썼다면? 컴파일러 레벨에서 막을 수 있는 방법이 없음 -> 불변 객체로 만들어서 해결해야 함
-
-            tx.commit();
+            tx.commit(); // 트랜잭션 커밋
         } catch (Exception e) {
             tx.rollback();
         } finally {
