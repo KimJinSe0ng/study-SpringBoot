@@ -16,8 +16,8 @@ public class Member extends BaseEntity{
     @Column(name = "USERNAME") //DB 컬럼명은 name 이야 하면 name으로 Insert 함
     private String username;
 
-    @ManyToOne
-    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY) //@ManyToOne, @OneToOne은 기본값이 즉시로딩이기 때문에 LAZY로 바꿔줘야 한다.
+    @JoinColumn(name = "TEAM_ID")
     private Team team;
 
 //    @OneToOne

@@ -7,6 +7,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -23,51 +24,37 @@ public class JpaMain {
         tx.begin();
         try {
 
-            //프록시 쿼리 확인
-//            Member member = new Member();
-//            member.setUsername("hello");
-//
-//            em.persist(member);
-//            em.flush();
-//            em.clear();
-//
-////            Member findMember = em.find(Member.class, member.getId());
-//            Member findMember = em.getReference(Member.class, member.getId()); //실제로 findMember를 실제 사용할 때 DB쿼리가 나감
-//            System.out.println("findMember.getId() = " + findMember.getId());
-//            System.out.println("findMember.getTeam() = " + findMember.getTeam());
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
 
-            //프록시 특징
-//            Member member1 = new Member();
-//            member1.setUsername("member1");
-//            em.persist(member1);
-//
-//            em.flush();
-//            em.clear();
-//
-//            Member refMember = em.getReference(Member.class, member1.getId());
-//            System.out.println("refMember = " + refMember.getClass()); //Proxy
-//
-//            Member findMember = em.find(Member.class, member1.getId());
-//            System.out.println("findMember = " + findMember.getClass()); //Member
-//
-//            System.out.println("refMember == findMember: " + (refMember == findMember)); //JPA는 어떻게든 이걸 맞춘다.
+            Team teamB = new Team();
+            team.setName("teamB");
+            em.persist(teamB);
 
-            //영속성 컨텍스트의 도움을 받을 수 없는 준영속 상태일 때, 프록시를 초기화하면 문제 발생
             Member member1 = new Member();
             member1.setUsername("member1");
+            member1.setTeam(team);
             em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("member2");
+            member2.setTeam(teamB);
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
-            Member refMember = em.getReference(Member.class, member1.getId());
-            System.out.println("refMember = " + refMember.getClass()); //Proxy
-
-//            em.detach(refMember); //could not initialize proxy 에러 발생
-//
-            refMember.getUsername(); //하면 프록시 초기화 됨
-            Hibernate.initialize(refMember); //하면 프록시 강제 초기화
-            System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember)); //프록시 인스턴스 초기화 여부 확인
+//            Member m = em.find(Member.class, member1.getId()); //즉시로딩의 경우, Member와 Team을 조인해서 조회해옴. 지연로딩의 경우, 실제 team이 사용될 때 쿼리 사용(실제 엔티티)
+//            List<Member> members = em.createQuery("select m from Member m", Member.class).getResultList();
+            //SQL: select * from Member; 로 일단 나가는데, EAGER이기 때문에 List<Member>에 모든 값이 다 들어가있어야 해
+            //SQL: select * from Team where TEAM_ID = xxx
+            List<Member> members = em.createQuery("select m from Member m join fetch m.team", Member.class).getResultList(); //페치 조인으로 N+1문제 해결 가능
+            //N+1문제 해결 방법
+            //일단은 모든 연관관계를 지연로딩으로 깔고
+            //1. JPQL에서 패치 조인을 배움 -> 동적으로 가져와서 써줌 (대부분 해결)
+            //2. 엔티티 그래프 라는 어노테이션
+            //3. 배치 사이즈
 
             tx.commit();
         } catch (Exception e) {
