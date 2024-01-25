@@ -41,7 +41,7 @@ public class JpaMain {
             member2.setHomeAddress(copyAddress);
             em.persist(member2);
 
-            member.getHomeAddress().setCity("newCity"); //1번째 멤버의 주소만 newCity로 바꾸고 싶어 -> 멤버1, 멤버2 둘다 바뀜: 사이드 이펙트로 버그 찾기 어려움
+//            member.getHomeAddress().setCity("newCity"); //1번째 멤버의 주소만 newCity로 바꾸고 싶어 -> 멤버1, 멤버2 둘다 바뀜: 사이드 이펙트로 버그 찾기 어려움
             //한계: 복사해서 써야 하는데 실수로 복사를 하지 않고 썼다면? 컴파일러 레벨에서 막을 수 있는 방법이 없음 -> 불변 객체로 만들어서 해결해야 함
 
             tx.commit();
