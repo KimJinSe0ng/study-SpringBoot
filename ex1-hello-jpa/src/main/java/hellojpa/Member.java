@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity //JPA가 로딩될 때 JPA가 관리해야겠다고 인식
-public class Member extends BaseEntity{
+public class Member {
 
     @Id
     @GeneratedValue
@@ -16,16 +16,25 @@ public class Member extends BaseEntity{
     @Column(name = "USERNAME") //DB 컬럼명은 name 이야 하면 name으로 Insert 함
     private String username;
 
-    @ManyToOne(fetch = FetchType.LAZY) //@ManyToOne, @OneToOne은 기본값이 즉시로딩이기 때문에 LAZY로 바꿔줘야 한다.
-    @JoinColumn(name = "TEAM_ID")
-    private Team team;
+    //기간 Period
+//    private LocalDateTime startDate;
+//    private LocalDateTime endDate;
+    @Embedded
+    private Period workPeriod;
 
-//    @OneToOne
-//    @JoinColumn(name = "LOCKER_ID")
-//    private Locker locker;
-//
-//    @OneToMany(mappedBy = "member")
-//    private List<MemberProduct> memberProducts = new ArrayList<>();
+    //주소
+//    private String city;
+//    private String street;
+//    private String zipcode;
+    @Embedded
+    private Address homeAddress;
+    @Embedded
+    @AttributeOverrides({ //한 엔티티에서 같은 타입을 쓸 때
+            @AttributeOverride(name = "city", column = @Column(name = "WORK_CITY")),
+            @AttributeOverride(name = "street", column = @Column(name = "WORK_STREET")),
+            @AttributeOverride(name = "zipcode", column = @Column(name = "EMP_END"))
+    })
+    private Address workAddress;
 
     public Long getId() {
         return id;
@@ -43,12 +52,19 @@ public class Member extends BaseEntity{
         this.username = username;
     }
 
-    public Team getTeam() {
-        return team;
+    public Period getWorkPeriod() {
+        return workPeriod;
     }
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setWorkPeriod(Period workPeriod) {
+        this.workPeriod = workPeriod;
     }
 
+    public Address getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(Address homeAddress) {
+        this.homeAddress = homeAddress;
+    }
 }
