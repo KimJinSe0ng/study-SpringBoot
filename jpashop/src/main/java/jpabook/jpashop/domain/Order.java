@@ -4,6 +4,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.FetchType.*;
+
 @Entity
 @Table(name = "ORDERS")
 public class Order extends BaseEntity {
@@ -13,14 +16,14 @@ public class Order extends BaseEntity {
     private Long id;
 //    @Column(name = "MEMBER_ID")
 //    private Long memberId;
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @OneToOne
+    @OneToOne(fetch = LAZY, cascade = ALL) //Order를 생성해서 delivery에 넣을 때 자동으로 Order를 저장하면 delivery도 저장됨, persist(order)를 하면 다 저장됨
     @JoinColumn(name = "DELIVERY_ID")
     private Delivery delivery;
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = ALL)
     private List<OrderItem> orderItems;
     private LocalDateTime orderDate;
     @Enumerated(EnumType.STRING)
