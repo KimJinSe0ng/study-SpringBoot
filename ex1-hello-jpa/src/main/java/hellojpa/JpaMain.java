@@ -24,37 +24,22 @@ public class JpaMain {
         tx.begin();
         try {
 
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
+            Child child1 = new Child();
+            Child child2 = new Child();
 
-            Team teamB = new Team();
-            team.setName("teamB");
-            em.persist(teamB);
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
 
-            Member member1 = new Member();
-            member1.setUsername("member1");
-            member1.setTeam(team);
-            em.persist(member1);
-
-            Member member2 = new Member();
-            member2.setUsername("member2");
-            member2.setTeam(teamB);
-            em.persist(member2);
+            em.persist(parent);
+            em.persist(child1);
+            em.persist(child2);
 
             em.flush();
             em.clear();
 
-//            Member m = em.find(Member.class, member1.getId()); //즉시로딩의 경우, Member와 Team을 조인해서 조회해옴. 지연로딩의 경우, 실제 team이 사용될 때 쿼리 사용(실제 엔티티)
-//            List<Member> members = em.createQuery("select m from Member m", Member.class).getResultList();
-            //SQL: select * from Member; 로 일단 나가는데, EAGER이기 때문에 List<Member>에 모든 값이 다 들어가있어야 해
-            //SQL: select * from Team where TEAM_ID = xxx
-            List<Member> members = em.createQuery("select m from Member m join fetch m.team", Member.class).getResultList(); //페치 조인으로 N+1문제 해결 가능
-            //N+1문제 해결 방법
-            //일단은 모든 연관관계를 지연로딩으로 깔고
-            //1. JPQL에서 패치 조인을 배움 -> 동적으로 가져와서 써줌 (대부분 해결)
-            //2. 엔티티 그래프 라는 어노테이션
-            //3. 배치 사이즈
+            Parent findParent = em.find(Parent.class, parent.getId());
+            findParent.getChildList().remove(0);
 
             tx.commit();
         } catch (Exception e) {
