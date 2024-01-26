@@ -1,6 +1,7 @@
 package jpql;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.List;
 
 public class JpaMain {
@@ -14,118 +15,40 @@ public class JpaMain {
 
         try {
 
-//            Member member = new Member();
-//            member.setUsername("member1");
-//            member.setAge(10);
-//            em.persist(member);
-
-            //기본 문법
-//            TypedQuery<Member> query = em.createQuery("select m from Member m", Member.class); //TypedQuery:반환 타입이 명확할 때 사용
-//            TypedQuery<String> query2 = em.createQuery("select m.username from Member m", String.class);
-//            Query query3 = em.createQuery("select m.username, m.age from Member m"); //Query:반환 타입이 명확하지 않을 때 사용
-//            Member result = em.createQuery("select m from Member m where m.username = :username", Member.class)
-//                    .setParameter("username", "member1")
-//                    .getSingleResult();
-
-            //프로젝션
-//            List<Member> result = em.createQuery("select m from Member m", Member.class) //엔티티 프로젝션
-//            List<Team> result = em.createQuery("select m.team from Member m", Team.class) //엔티티 프로젝션
-//            Member findMember = result.get(0); //수정 가능
-//            findMember.setAge(20);
-
-//            em.createQuery("select o.address from Order o", Address.class) //임베디드 타입 프로젝션: 임베디드의 엔티티에서 시작해야 함
-//                    .getResultList();
-
-//            em.createQuery("select distinct m.username, m.age from Member m") //스칼라 타입 프로젝션
-//                    .getResultList();
-
-            //프로젝션 - 여러 값 조회
-//            List resultList = em.createQuery("select distinct m.username, m.age from Member m")
-//                    .getResultList();
-//            Object o = resultList.get(0);
-//            Object[] result = (Object[]) o;
-//            System.out.println("username = " + result[0]);
-//            System.out.println("age = " + result[1]);
-
-//            List<MemberDTO> result = em.createQuery("select new jpql.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
-//                    .getResultList();
-//            MemberDTO memberDTO = result.get(0);
-//            System.out.println("memberDTO.getUsername() = " + memberDTO.getUsername());
-//            System.out.println("memberDTO.getAge() = " + memberDTO.getAge());
-
-            //페이징
-//            for (int i = 0; i < 100; i++) {
-//                Member member = new Member();
-//                member.setUsername("member" + 1);
-//                member.setAge(i);
-//                em.persist(member);
-//            }
-//            List<Member> result = em.createQuery("select m from Member m order by m.age desc", Member.class)
-//                    .setFirstResult(0)
-//                    .setMaxResults(10)
-//                    .getResultList();
-//            System.out.println("result.size() = " + result.size());
-//            for (Member member1 : result) {
-//                System.out.println("member1 = " + member1);
-//            }
-
-            //조인
-//            Team team = new Team();
-//            team.setName("teamA");
-//            em.persist(team);
-//
-//            Member member = new Member();
-//            member.setUsername("관리자");
-//            member.setAge(10);
-//            member.setType(MemberType.USER);
-//
-//            member.setTeam(team);
-//
-//            em.persist(member);
-//
-//            em.flush();
-//            em.clear();
-
-//            String query = "select m from Member m left join m.team t on t.name ='teamA'"; //조인 대상 필터링
-//            String query = "select m from Member m left join Team  t on m.username = t.name"; //연관관계 없는 엔티티 외부 조인
-//            String query = "select m.username, 'HELLO', true from Member m where m.type = :userType";
-//            List<Member> result = em.createQuery(query)
-//                    .setParameter("userType", MemberType.ADMIN)
-//                    .getResultList();
-//            System.out.println("result = " + result.size());
-
-            //조건식
-//            String query =
-//                    "select " +
-//                            "case when m.age <= 10 then '학생요금'" +
-//                            "     when m.age >= 60 then '경로요금'" +
-//                            "     else '일반요금'" +
-//                            "end " +
-//                            "from Member m";
-//            String query = "select nullif(m.username, '관리자') as username from Member m";
-//            List<String> result = em.createQuery(query, String.class).getResultList();
-//            for (String s : result) {
-//                System.out.println("s = " + s);
-//            }
-
-            //JPQL 기본 함수
+            Team team = new Team();
+            em.persist(team);
 
             Member member1 = new Member();
             member1.setUsername("관리자1");
+            member1.setTeam(team);
             em.persist(member1);
 
             Member member2 = new Member();
             member2.setUsername("관리자2");
+            member2.setTeam(team);
             em.persist(member2);
 
             em.flush();
             em.clear();
 
-            String query = "select function('group_concat', m.username) from Member m";
-            List<String> result = em.createQuery(query, String.class).getResultList();
-            for (String s : result) {
-                System.out.println("s = " + s);
-            }
+//            String query = "select m.team.name from Member m"; //상태필드(name)라 경로 겸색 더 이상 못함
+//            String query = "select m.team from Member m"; //단일 값 연관 경로: 묵시적 내부 조인(inner join) 발생, 탐색 가능
+//
+//            List<Team> result = em.createQuery(query, Team.class) //Team -> 조인이 엄청 발생: 조심해야겠구나 -> 묵시적 내부 조인 발생하지 않게 짜야 함
+//                    .getResultList();
+//
+//            for (Team s : result) {
+//                System.out.println("s = " + s);
+//            }
+
+//            String query = "select t.members.size from Team t"; //컬렉션 값 연관 경로: 묵시적 내부 조인 발생, 탐색X
+            //컬렉션 자체를 가리키는 것이기 때문에 필드를 찍을 수가 없다. 따라서 탐색이 불가능함
+            String query = "select m.username from Team t join t.members m"; //해결방법: 명시적 조인을 통해 별칭을 얻으면 별칭을 통해 탐색 가능
+
+            Integer result = em.createQuery(query, Integer.class)
+                    .getSingleResult();
+
+            System.out.println("result = " + result);
 
             tx.commit();
         } catch (Exception e) {
