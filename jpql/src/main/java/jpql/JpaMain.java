@@ -70,21 +70,21 @@ public class JpaMain {
 //            }
 
             //조인
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
-
-            Member member = new Member();
-            member.setUsername("관리자");
-            member.setAge(10);
-            member.setType(MemberType.USER);
-
-            member.setTeam(team);
-
-            em.persist(member);
-
-            em.flush();
-            em.clear();
+//            Team team = new Team();
+//            team.setName("teamA");
+//            em.persist(team);
+//
+//            Member member = new Member();
+//            member.setUsername("관리자");
+//            member.setAge(10);
+//            member.setType(MemberType.USER);
+//
+//            member.setTeam(team);
+//
+//            em.persist(member);
+//
+//            em.flush();
+//            em.clear();
 
 //            String query = "select m from Member m left join m.team t on t.name ='teamA'"; //조인 대상 필터링
 //            String query = "select m from Member m left join Team  t on m.username = t.name"; //연관관계 없는 엔티티 외부 조인
@@ -102,11 +102,31 @@ public class JpaMain {
 //                            "     else '일반요금'" +
 //                            "end " +
 //                            "from Member m";
-            String query = "select nullif(m.username, '관리자') as username from Member m";
+//            String query = "select nullif(m.username, '관리자') as username from Member m";
+//            List<String> result = em.createQuery(query, String.class).getResultList();
+//            for (String s : result) {
+//                System.out.println("s = " + s);
+//            }
+
+            //JPQL 기본 함수
+
+            Member member1 = new Member();
+            member1.setUsername("관리자1");
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("관리자2");
+            em.persist(member2);
+
+            em.flush();
+            em.clear();
+
+            String query = "select function('group_concat', m.username) from Member m";
             List<String> result = em.createQuery(query, String.class).getResultList();
             for (String s : result) {
                 System.out.println("s = " + s);
             }
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
