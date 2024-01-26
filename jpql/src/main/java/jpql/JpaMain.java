@@ -77,6 +77,7 @@ public class JpaMain {
             Member member = new Member();
             member.setUsername("teamA");
             member.setAge(10);
+            member.setType(MemberType.USER);
 
             member.setTeam(team);
 
@@ -86,8 +87,10 @@ public class JpaMain {
             em.clear();
 
 //            String query = "select m from Member m left join m.team t on t.name ='teamA'"; //조인 대상 필터링
-            String query = "select m from Member m left join Team  t on m.username = t.name"; //연관관계 없는 엔티티 외부 조인
-            List<Member> result = em.createQuery(query, Member.class)
+//            String query = "select m from Member m left join Team  t on m.username = t.name"; //연관관계 없는 엔티티 외부 조인
+            String query = "select m.username, 'HELLO', true from Member m where m.type = :userType"; //연관관계 없는 엔티티 외부 조인
+            List<Member> result = em.createQuery(query)
+                    .setParameter("userType", MemberType.ADMIN)
                     .getResultList();
             System.out.println("result = " + result.size());
             tx.commit();
