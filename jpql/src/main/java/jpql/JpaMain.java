@@ -59,9 +59,15 @@ public class JpaMain {
 //            String query = "select m from Member m join fetch m.team"; //페치 조인: 페치 조인으로 회원과 팀을 함께 조회해서 지연 로딩X
 //            String query = "select t from Team t join fetch t.members"; //컬렉션 페치 조인: 페치 조인으로 팀과 회원을 함께 조회해서 지연 로딩 발생 안함
 //            String query = "select distinct t from Team t join fetch t.members"; //페치조인과 DISTINCT
-            String query = "select t from Team t join t.members m"; //페치 조인과 일반 조인의 차이: 일반조인 실행시 연관된 엔티티를 함께 조회하지 않음
+//            String query = "select t from Team t join t.members m"; //페치 조인과 일반 조인의 차이: 일반조인 실행시 연관된 엔티티를 함께 조회하지 않음
+
+//            String query = "select t from Team t join fetch t.members as m join fetch m.team"; //페치 조인의 특징과 한계: 페치 조인을 몇 단계 거쳐 가져올 때만 씀(주의)
+//            String query = "select m from Member m join fetch m.team t"; //페이징 해결 방법1
+            String query = "select t from Team t"; //페이징 해결 방법2
 
             List<Team> result = em.createQuery(query, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(2)
                     .getResultList();
 
 //            for (Member member : result) { //페치 조인: 페치 조인으로 회원과 팀을 함께 조회해서 지연 로딩X
@@ -73,14 +79,14 @@ public class JpaMain {
 //                //최악의 경우, 회원이 100명이 있고 팀 소속이 다 다르다면? 직원 100명 -> 쿼리 100번 나감 -> N + 1(1은 회원을 가져오기 위한 쿼리, N은 루프도는 횟수)
 //            }
 
+            System.out.println("result = " + result.size());
+
             for (Team team : result) { //컬렉션 페치 조인: 페치 조인으로 팀과 회원을 함께 조회해서 지연 로딩 발생 안함
                 System.out.println("team = " + team.getName() + "|members = " + team.getMembers().size());
                 for (Member member : team.getMembers()) {
                     System.out.println("-> member = " + member);
                 }
             }
-
-//            System.out.println("result = " + result.size());
 
             tx.commit();
         } catch (Exception e) {
