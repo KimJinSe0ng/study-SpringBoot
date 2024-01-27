@@ -66,7 +66,7 @@ public class JpaMain {
 //            String query = "select t from Team t"; //페이징 해결 방법2
 
 //            String query = "select m from Member m where m = :member"; //엔티티 직접 사용 - 기본 키 값
-            String query = "select m from Member m where m.team = :team"; //엔티티 직접 사용 - 외래 키 값
+//            String query = "select m from Member m where m.team = :team"; //엔티티 직접 사용 - 외래 키 값
 
 //            List<Team> result = em.createQuery(query, Team.class) //페이징
 //                    .setFirstResult(0)
@@ -77,13 +77,13 @@ public class JpaMain {
 //                    .setParameter("member", member1)
 //                    .getSingleResult();
 
-            List<Member> members = em.createQuery(query, Member.class)
-                    .setParameter("team", teamA)
-                    .getResultList();
+//            List<Member> members = em.createQuery(query, Member.class)
+//                    .setParameter("team", teamA)
+//                    .getResultList();
 
-            for (Member member : members) {
-                System.out.println("member = " + member);
-            }
+//            for (Member member : members) {
+//                System.out.println("member = " + member);
+//            }
 
 //            for (Member member : result) { //페치 조인: 페치 조인으로 회원과 팀을 함께 조회해서 지연 로딩X
 //                System.out.println("member = " + member.getUsername() + ", " + member.getTeam().getName());
@@ -102,6 +102,13 @@ public class JpaMain {
 //                    System.out.println("-> member = " + member);
 //                }
 //            }
+
+            List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
+                    .setParameter("username", "회원1")
+                    .getResultList();
+            for (Member member : resultList) {
+                System.out.println("member = " + member);
+            }
 
             tx.commit();
         } catch (Exception e) {
