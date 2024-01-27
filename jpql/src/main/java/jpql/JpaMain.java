@@ -26,20 +26,23 @@ public class JpaMain {
             Member member1 = new Member();
             member1.setUsername("회원1");
             member1.setTeam(teamA);
+            member1.setAge(0);
             em.persist(member1);
 
             Member member2 = new Member();
             member2.setUsername("회원2");
             member2.setTeam(teamA);
+            member1.setAge(0);
             em.persist(member2);
 
             Member member3 = new Member();
             member3.setUsername("회원3");
             member3.setTeam(teamB);
+            member1.setAge(0);
             em.persist(member3);
 
-            em.flush();
-            em.clear();
+//            em.flush();
+//            em.clear();
 
 //            String query = "select m.team.name from Member m"; //상태필드(name)라 경로 겸색 더 이상 못함
 //            String query = "select m.team from Member m"; //단일 값 연관 경로: 묵시적 내부 조인(inner join) 발생, 탐색 가능
@@ -103,12 +106,25 @@ public class JpaMain {
 //                }
 //            }
 
-            List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
-                    .setParameter("username", "회원1")
-                    .getResultList();
-            for (Member member : resultList) {
-                System.out.println("member = " + member);
-            }
+//            List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class) //Named 쿼리
+//                    .setParameter("username", "회원1")
+//                    .getResultList();
+//            for (Member member : resultList) {
+//                System.out.println("member = " + member);
+//            }
+
+            //셋 다 0살로 insert되어 있고,
+            //flush() 자동 호출
+            int resultCount = em.createQuery("update Member m set m.age = 20") //벌크 연산, 이 시점에 현재 영속성 컨텍스트에는 셋 다 0살이지만, DB에는 20살로 업데이트 되어 있음
+                    .executeUpdate(); //DB에만 반영이 되어 있기 때문에 영속성 컨텍스트도 업데이트 해주야 함
+            em.clear(); //영속성 컨텍스트 초기화
+            Member findMember = em.find(Member.class, member1.getId()); //DB에서 새로 가져옴
+            System.out.println("findMember = " + findMember.getAge());
+            System.out.println("resultCount = " + resultCount);
+
+            System.out.println("member1.getAge() = " + member1.getAge()); //0살
+            System.out.println("member2.getAge() = " + member2.getAge()); //0살
+            System.out.println("member3.getAge() = " + member3.getAge()); //0살
 
             tx.commit();
         } catch (Exception e) {
