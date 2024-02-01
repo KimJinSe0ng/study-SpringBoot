@@ -44,11 +44,11 @@ public class MappingController {
      * @PathVariable("userId") String userId -> @PathVariable userID
      * 매핑이 이렇게 옴: /mapping/userA(URL 자체에 값이 들어가 있는 것)
      */
-    @GetMapping("/mapping/{userId}") //{userId}값을 @PathVariable("USERID") 여기 USERID에서 꺼내서 씀
-    public String mappingPath(@PathVariable("userId") String data) {
-        log.info("mappingPath userId={}", data);
-        return "ok";
-    }
+//    @GetMapping("/mapping/{userId}") //{userId}값을 @PathVariable("USERID") 여기 USERID에서 꺼내서 씀
+//    public String mappingPath(@PathVariable("userId") String data) {
+//        log.info("mappingPath userId={}", data);
+//        return "ok";
+//    }
 
     @GetMapping("/mapping/{userId}")
     public String mappingPath1(@PathVariable String userId) { //변수명을 맞추고 싶으면 이렇게 쓸 수 있음(생략 가능)
@@ -60,7 +60,7 @@ public class MappingController {
      * PathVariable 사용 다중
      */
     @GetMapping("/mapping/users/{userId}/orders/{orderId}")
-    public String mappingPath(@PathVariable String userId, @PathVariable Long orderId) {
+    public String mappingPath2(@PathVariable String userId, @PathVariable Long orderId) {
         log.info("mappingPath userId={}, orderId={}", userId, orderId);
         return "ok";
     }
