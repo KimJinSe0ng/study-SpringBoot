@@ -56,7 +56,7 @@ public class BasicItemController {
     }
 
 //    @PostMapping("/add")
-    public String addItemV2(@ModelAttribute("item") Item item, Model model) { //Model model 지워도 됨
+    public String addItemV2(@ModelAttribute("item") Item item) { //Model model 지워도 됨
 
         //@ModelAttribute 기능 1: 아래 4줄 자동으로 만들어줌
 //        Item item = new Item();
@@ -93,7 +93,7 @@ public class BasicItemController {
      * @ModelAttribute 자체 생략 가능
      * model.addAttribute(item) 자동 추가
      */
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV4(Item item) {
         //1-1. @ModelAttribute 생략하면, String이나 단순 기본 타입이 오면 @RequestParam이 자동 적용
         //1-2. 우리가 만든 임의의 객체면 @ModelAttribute가 적용됨
@@ -102,6 +102,31 @@ public class BasicItemController {
         itemRepository.save(item);
 
         return "basic/item";
+    }
+
+    /**
+     * PRG - Post/Redirect/Get
+     */
+    @PostMapping("/add")
+    public String addItemV5(Item item) {
+        itemRepository.save(item);
+
+        return "redirect:/basic/items/" + item.getId(); //item.getId() 이게 문제가 될 수 있음 -> 항상 인코딩해서 넣어줘야 함
+    }
+
+    @GetMapping("/{itemId}/edit")
+    public String editForm(@PathVariable Long itemId, Model model) {
+        Item item = itemRepository.findById(itemId);
+        model.addAttribute("item", item);
+        return "basic/editForm";
+    }
+
+    @PostMapping("/{itemId}/edit")
+    public String edit(@PathVariable Long itemId, @ModelAttribute Item item) {
+        itemRepository.update(itemId, item);
+        //리다이렉트 X : /basic/items/1/edit
+        //리다이렉트 O : /basic/items/1
+        return "redirect:/basic/items/{itemId}";
     }
 
     /**
