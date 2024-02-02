@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -107,11 +108,24 @@ public class BasicItemController {
     /**
      * PRG - Post/Redirect/Get
      */
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV5(Item item) {
         itemRepository.save(item);
 
         return "redirect:/basic/items/" + item.getId(); //item.getId() 이게 문제가 될 수 있음 -> 항상 인코딩해서 넣어줘야 함
+    }
+
+    /**
+     * RedirectAttributes
+     */
+    @PostMapping("/add")
+    public String addItemV6(Item item, RedirectAttributes redirectAttributes) {
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId()); //redirect와 관련된 속성을 넣는 것임
+        redirectAttributes.addAttribute("status", true); //저장이 되어서 넘어온거다 라고 생각
+        return "redirect:/basic/items/{itemId}";
+        //redirectAttributes.addAttribute("itemId", savedItem.getId());의 "itemId"값이 {itemId}에 들어가고,
+        //?status=... 남는 애들은 쿼리 파라미터로 들어감
     }
 
     @GetMapping("/{itemId}/edit")
