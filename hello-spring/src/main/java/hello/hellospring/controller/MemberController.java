@@ -26,7 +26,7 @@ public class MemberController {
         return "members/createMemberForm";
     }
 
-    @PostMapping("/members/new")
+    @PostMapping("/members/new") //회원을 실제 등록하는 기능
     public String create(MemberForm form) {
         Member member = new Member();
         member.setName(form.getName());
