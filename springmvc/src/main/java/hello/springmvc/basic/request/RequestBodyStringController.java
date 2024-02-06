@@ -56,7 +56,7 @@ public class RequestBodyStringController {
     public HttpEntity<String> requestBodyStringV3(HttpEntity<String> httpEntity) { //HttpEntity<String>의 String을 보고
         //String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
         //스프링이 위 코드를 알아서 해줌. Http의 Body에 있는 문자를 바꿔서 넣어줄게 라는 HttpMessageConverter 가 동작함
-        //HttpEntity는 Spring에서 HTTP 요청 또는 응답의 전체 정보를 나타내는 클래스로, HTTP 헤더와 본문 데이터를 포함합니다.
+        //HttpEntity는 Spring에서 HTTP 요청 또는 응답의 전체 정보를 나타내는 클래스로, HTTP 헤더와 본문 데이터를 포함
         String messageBody = httpEntity.getBody();
         log.info("messageBody={}", messageBody);
         return new HttpEntity<>("ok");
