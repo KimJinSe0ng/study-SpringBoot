@@ -2,6 +2,7 @@ package hello.servlet.web.frontcontroller.v3;
 
 import hello.servlet.web.frontcontroller.ModelView;
 import hello.servlet.web.frontcontroller.MyView;
+import hello.servlet.web.frontcontroller.v2.ControllerV2;
 import hello.servlet.web.frontcontroller.v3.controller.MemberFormControllerV3;
 import hello.servlet.web.frontcontroller.v3.controller.MemberListControllerV3;
 import hello.servlet.web.frontcontroller.v3.controller.MemberSaveControllerV3;
@@ -36,14 +37,18 @@ public class FrontControllerServletV3 extends HttpServlet {
             return;
         }
 
+
+
         Map<String, String> paraMap = createParamMap(request);
 
+//        MyView view = controller.process(request, response);
         ModelView mv = controller.process(paraMap); //파라미터 완료
 
         //뷰로 전달, new-form
         String viewName = mv.getViewName(); //논리이름 new-form만 얻는 것이기 때문에 물리적인 view 객체를 만들기 위해 뷰 리졸버 생성(실제 view를 찾아주는 역할)
         MyView view = viewResolver(viewName); //실제 물리이름을 포함한 뷰로 반환됨
 
+//        view.render(request, response);
         view.render(mv.getModel(), request, response); //렌더를 호출하며 모델을 넘김
     }
 
