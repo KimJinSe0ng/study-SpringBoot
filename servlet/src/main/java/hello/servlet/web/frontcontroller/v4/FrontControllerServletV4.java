@@ -1,6 +1,8 @@
 package hello.servlet.web.frontcontroller.v4;
 
+import hello.servlet.web.frontcontroller.ModelView;
 import hello.servlet.web.frontcontroller.MyView;
+import hello.servlet.web.frontcontroller.v3.ControllerV3;
 import hello.servlet.web.frontcontroller.v4.controller.MemberFormControllerV4;
 import hello.servlet.web.frontcontroller.v4.controller.MemberListControllerV4;
 import hello.servlet.web.frontcontroller.v4.controller.MemberSaveControllerV4;
@@ -36,12 +38,15 @@ public class FrontControllerServletV4 extends HttpServlet {
         }
 
         Map<String, String> paraMap = createParamMap(request);
-        Map<String, Object> model = new HashMap<>(); //Model 추가
+        Map<String, Object> model = new HashMap<>(); //v4 Model 추가
 
-        String viewName = controller.process(paraMap,model); //기존에 모델뷰에서 받던 건 필요 없음
+//        ModelView mv = controller.process(paraMap); //v3
+//        String viewName = mv.getViewName(); //v3
+        String viewName = controller.process(paraMap,model); //v4 기존에 모델뷰에서 받던 건 필요 없음
 
         MyView view = viewResolver(viewName);
-        view.render(model, request, response); //기존에 모델뷰에서 모델을 꺼냈었는데, 모델을 직접 제공
+//        view.render(mv.getModel(), request, response); //v3
+        view.render(model, request, response); //v4 기존에 모델뷰에서 모델을 꺼냈었는데, 모델을 직접 제공
     }
 
     private static MyView viewResolver(String viewName) { //view의 논리 이름을 가지고 실제 물리 이름을 만들면서 MyView를 반환하는 메소드
