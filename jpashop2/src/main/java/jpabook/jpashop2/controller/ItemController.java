@@ -62,17 +62,20 @@ public class ItemController {
     }
 
     @PostMapping("items/{itemId}/edit")
-    public String updateItem(@PathVariable String itemId, @ModelAttribute("form") BookForm form) {
+    public String updateItem(@PathVariable Long itemId, @ModelAttribute("form") BookForm form) {
 
-        Book book = new Book();
-        book.setId(form.getId());
-        book.setName(form.getName());
-        book.setPrice(form.getPrice());
-        book.setStockQuantity(form.getStockQuantity());
-        book.setAuthor(form.getAuthor());
-        book.setIsbn(form.getIsbn());
+//        Book book = new Book(); //Book 객체는 새로운 객체이지만
+//        book.setId(form.getId()); //Id 값은 이미 존재 -> 한 번 데이터베이스에 저장하고 불러온 객체를 준영속성 객체라고 함
+//        //이렇게 임의로 만들어낸 엔티티도 기존 식별자를 가지고 있으면 준영속 엔티티로 볼 수 있다.
+//        book.setName(form.getName());
+//        book.setPrice(form.getPrice());
+//        book.setStockQuantity(form.getStockQuantity());
+//        book.setAuthor(form.getAuthor());
+//        book.setIsbn(form.getIsbn());
+//        itemService.saveItem(book); //book 엔티티가 넘어감 -> merge 실행됨
 
-        itemService.saveItem(book); //book 엔티티가 넘어감
+        itemService.updateItem(itemId, form.getName(), form.getPrice(), form.getStockQuantity());
+
         return "redirect:/items";
     }
 }
