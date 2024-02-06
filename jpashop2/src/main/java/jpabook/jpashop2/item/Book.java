@@ -1,4 +1,4 @@
-package jpabook.jpashop2.domain.item;
+package jpabook.jpashop2.item;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

@@ -1,7 +1,7 @@
-package jpabook.jpashop2.domain.service;
+package jpabook.jpashop2.service;
 
-import jpabook.jpashop2.domain.item.Item;
-import jpabook.jpashop2.domain.repository.ItemRepository;
+import jpabook.jpashop2.item.Item;
+import jpabook.jpashop2.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
