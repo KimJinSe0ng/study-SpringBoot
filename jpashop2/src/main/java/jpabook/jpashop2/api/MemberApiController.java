@@ -3,11 +3,10 @@ package jpabook.jpashop2.api;
 import jakarta.validation.Valid;
 import jpabook.jpashop2.domain.Member;
 import jpabook.jpashop2.service.MemberService;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,6 +41,27 @@ public class MemberApiController {
         return new CreateMemberResponse(id);
     }
 
+    @PutMapping("/api/v2/members/{id}")
+    public UpdateMemberResponse updateMemberV2(
+            @PathVariable("id") Long id,
+            @RequestBody @Valid UpdateMemberRequest request) {
+        //업데이트용 DTO를 별도로 만들었다. 등록이랑 수정은 API 스펙이 다르다. 수정은 굉장히 제한적이다.
+        memberService.update(id, request.getName()); //수정은 변경감지!
+        Member findMember = memberService.findOne(id);
+        return new UpdateMemberResponse(findMember.getId(), findMember.getName());
+    }
+
+    @Data
+    static class UpdateMemberRequest { //DTO는 데이터로 왔다 갔다 하기 때문에 롬복 애너테이션 활용 많이 함, 엔티티는 게터만
+        private String name;
+    }
+
+    @Data
+    @AllArgsConstructor //모든 파라미터를 넘겨야 하는 생성자
+    static class UpdateMemberResponse {
+        private Long id;
+        private String name;
+    }
     @Data
     static class CreateMemberRequest {
         private String name;

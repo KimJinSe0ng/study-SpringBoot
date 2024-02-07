@@ -50,4 +50,22 @@ public class MemberService {
     public Member findOne(Long memberId) {
         return memberRepository.findOne(memberId);
     }
+
+    @Transactional
+    public void update(Long id, String name) {
+        Member member = memberRepository.findOne(id);
+        member.setName(name);
+        //커맨드랑 쿼리를 철저히 분리
+        //반환하더라도 업데이트는 id정도만 반환해 줌
+    }
+
+//    @Transactional
+//    public Member update(Long id, String name) {
+//        Member member = memberRepository.findOne(id); //얘에서 id를 조회해서 Member를 조회하는 꼴이 된다. 쿼리랑 커맨드가 같이 있는 꼴이 됨
+//        member.setName(name);
+//        //return을 Member해도 되는데, 반환하면 영속성 끊긴 Member를 넘기게 되는데..
+//        //커맨드랑 쿼리를 철저히 분리
+//        //Member를 반환하면 업데이트를 하면서 결국 멤버를 쿼리하는 꼴이 되는데 커맨드 업데이트라는 건 엔티티를 변경하는 변경성 메서드인데
+//        return member;
+//    }
 }
