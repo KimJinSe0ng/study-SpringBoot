@@ -8,11 +8,44 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequiredArgsConstructor
 public class MemberApiController {
 
     private final MemberService memberService;
+
+    @GetMapping("/api/v1/members")
+    public List<Member> membersV1() {
+        /**
+         * 만약에 회원에 대한 정보만 달라 했는데, 회원 주문 정보도 포함되어 넘어간다. 엔티티를 직접 노출하게 되면 외부에 다 노출이 된다.
+         * 엔티티에 @JsonIgnore를 사용하면 프레젠테이션 계층 로직이 추가되고 이렇게 해야하는데 문제가 된다. 엔티티에서 의존관계가 나가버리는 것이 된다.
+         */
+        return memberService.findMembers();
+    }
+
+    @GetMapping("/api/v2/members")
+    public Result membersV2() {
+        List<Member> findMembers = memberService.findMembers();
+        List<MemberDto> collect = findMembers.stream()
+                .map(m -> new MemberDto(m.getName()))
+                .collect(Collectors.toList());
+        return new Result(collect); //배열을 감싸서 내보내주면 유연성이 생긴다.
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class MemberDto { //내가 딱 노출할 것만 노출할 수 있음
+        private String name;
+    }
 
     @PostMapping("/api/v1/members")
     public CreateMemberResponse saveMemberV1(@RequestBody @Valid Member member) { //@RequestBody는 json 데이터를 쫙 Member로 바꿔줌
