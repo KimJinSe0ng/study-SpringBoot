@@ -107,4 +107,14 @@ public class OrderRepository {
         ).getResultList();
         //오더를 조회하는데, 한방 쿼리로 오더랑 멤버랑 딜리버리를 조인한 후 셀렉트 절에 다 넣고 다 땡겨오는 것, LAZY 무시하고, 프록시도 아닌 진짜 객체 값을 조회해서 가져옴
     }
+
+    public List<Order> findAllWithItem() {
+        return em.createQuery(
+                        "select distinct o from Order o" + //JPA의 distinct는 DB에 distinct도 날려주고, 엔티티가 중복이면 제거함
+                                " join fetch o.member m" +
+                                " join fetch o.delivery d" +
+                                " join fetch o.orderItems oi" + //컬렉션 조인
+                                " join fetch oi.item i", Order.class)
+                .getResultList();
+    }
 }

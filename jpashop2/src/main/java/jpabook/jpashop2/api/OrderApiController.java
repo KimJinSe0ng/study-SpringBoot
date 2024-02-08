@@ -52,6 +52,25 @@ public class OrderApiController {
         return result;
     }
 
+    /**
+     * V3. 엔티티를 조회해서 DTO로 변환(fetch join 사용O)
+     * - 페이징 시에는 N 부분을 포기해야함(대신에 batch fetch size? 옵션 주면 N -> 1 쿼리로 변경 가능)
+     */
+    @GetMapping("/api/v3/orders")
+    public List<OrderDto> ordersV3() {
+        List<Order> orders = orderRepository.findAllWithItem();
+
+        for (Order order : orders) {
+            System.out.println("order ref = " + order + " id = " + order.getId());
+        }
+
+        List<OrderDto> result = orders.stream()
+                .map(o -> new OrderDto(o))
+                .collect(Collectors.toList());
+
+        return result;
+    }
+
     @Getter
     static class OrderDto {
 
@@ -61,6 +80,7 @@ public class OrderApiController {
         private OrderStatus orderStatus;
         private Address address;
         private List<OrderItemDto> orderItems;
+
         public OrderDto(Order order) {
             orderId = order.getId();
             name = order.getMember().getName();
@@ -79,6 +99,7 @@ public class OrderApiController {
         private String itemName; //상품 명
         private int orderPrice; //주문 가격
         private int count; //주문 수량
+
         public OrderItemDto(OrderItem orderItem) {
             itemName = orderItem.getItem().getName();
             orderPrice = orderItem.getOrderPrice();
