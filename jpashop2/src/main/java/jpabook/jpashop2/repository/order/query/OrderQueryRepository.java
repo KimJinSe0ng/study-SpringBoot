@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,6 +28,37 @@ public class OrderQueryRepository {
             o.setOrderItems(orderItems);
         });
         return result;
+    }
+
+    public List<OrderQueryDto> findAllByDto_optimization() { //쿼리 총 2번, 위에 껀 루프 돌 때마다 쿼리 실행
+        List<OrderQueryDto> result = findOrders(); //쿼리1
+
+        Map<Long, List<OrderItemQueryDto>> orderItemMap = findOrderItemMap(toOrderIds(result));
+
+        result.forEach(o -> o.setOrderItems(orderItemMap.get(o.getOrderId()))); //메모리 맵에 올려두고 하는 것이 핵심, 루프 돌리면서 모자른 컬렉션 데이터 채워줌
+
+        return result;
+    }
+
+    private Map<Long, List<OrderItemQueryDto>> findOrderItemMap(List<Long> orderIds) {
+        List<OrderItemQueryDto> orderItems = em.createQuery( //쿼리2 한번 날리고
+                        "select new jpabook.jpashop2.repository.order.query.OrderItemQueryDto(oi.order.id, i.name, oi.orderPrice, oi.count)" +
+                                " from OrderItem oi" +
+                                " join oi.item i" +
+                                " where oi.order.id in :orderIds", OrderItemQueryDto.class)
+                .setParameter("orderIds", orderIds)
+                .getResultList();
+
+        Map<Long, List<OrderItemQueryDto>> orderItemMap = orderItems.stream() //메모리에 얘를 맵으로 다 가져온 후 매칭해서 값을 세팅
+                .collect(Collectors.groupingBy(orderItemQueryDto -> orderItemQueryDto.getOrderId()));
+        return orderItemMap;
+    }
+
+    private static List<Long> toOrderIds(List<OrderQueryDto> result) {
+        List<Long> orderIds = result.stream()
+                .map(o -> o.getOrderId())
+                .collect(Collectors.toList());
+        return orderIds;
     }
 
     private List<OrderItemQueryDto> findOrderItems(Long orderId) {
@@ -51,5 +84,4 @@ public class OrderQueryRepository {
                         " join o.delivery d", OrderQueryDto.class)
                 .getResultList();
     }
-
 }
