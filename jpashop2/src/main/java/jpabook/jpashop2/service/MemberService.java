@@ -2,6 +2,7 @@ package jpabook.jpashop2.service;
 
 import jpabook.jpashop2.domain.Member;
 import jpabook.jpashop2.repository.MemberRepository;
+import jpabook.jpashop2.repository.MemberRepositoryOld;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,12 +49,12 @@ public class MemberService {
      */
 //    @Transactional(readOnly = true)
     public Member findOne(Long memberId) {
-        return memberRepository.findOne(memberId);
+        return memberRepository.findById(memberId).get();
     }
 
     @Transactional
     public void update(Long id, String name) {
-        Member member = memberRepository.findOne(id);
+        Member member = memberRepository.findById(id).get();
         member.setName(name);
         //커맨드랑 쿼리를 철저히 분리
         //반환하더라도 업데이트는 id정도만 반환해 줌

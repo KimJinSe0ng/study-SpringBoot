@@ -1,36 +1,12 @@
 package jpabook.jpashop2.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jpabook.jpashop2.domain.Member;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-@Repository
-@RequiredArgsConstructor
-public class MemberRepository {
+public interface MemberRepository extends JpaRepository<Member, Long> { //<타입, PK타입>
 
-    private final EntityManager em;
-
-    public void save(Member member) {
-        em.persist(member);
-    }
-
-    public Member findOne(Long id) {
-        return em.find(Member.class, id);
-    }
-
-    public List<Member> findAll() {
-        //첫 번째: 쿼리, 두 번째: 반환 타입
-        return em.createQuery("select m from Member m", Member.class)
-                .getResultList();
-    }
-
-    public List<Member> findByName(String name) {
-        return em.createQuery("select m from Member m where m.name = :name", Member.class)
-                .setParameter("name", name)
-                .getResultList();
-    }
+    //select m from Member m where m.name = ?로 짜버림 -> 메서드 네임(ByName)을 보고 JPQL을 만든다. Nameasdfka 이런식이면 안 됨
+    List<Member> findByName(String name);
 }
