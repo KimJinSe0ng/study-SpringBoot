@@ -30,11 +30,17 @@ public class OrderQueryRepository {
         return result;
     }
 
+    /**
+     * 최적화
+     * Query: 루트 1번, 컬렉션 1번
+     * 데이터를 한꺼번에 처리할 때 많이 사용하는 방식
+     */
     public List<OrderQueryDto> findAllByDto_optimization() { //쿼리 총 2번, 위에 껀 루프 돌 때마다 쿼리 실행
+        //루트 조회(toOne 코드를 모두 한번에 조회)
         List<OrderQueryDto> result = findOrders(); //쿼리1
-
+        //orderItem 컬렉션을 MAP 한방에 조회
         Map<Long, List<OrderItemQueryDto>> orderItemMap = findOrderItemMap(toOrderIds(result));
-
+        //루프를 돌면서 컬렉션 추가(추가 쿼리 실행X)
         result.forEach(o -> o.setOrderItems(orderItemMap.get(o.getOrderId()))); //메모리 맵에 올려두고 하는 것이 핵심, 루프 돌리면서 모자른 컬렉션 데이터 채워줌
 
         return result;
@@ -83,5 +89,16 @@ public class OrderQueryRepository {
                         " join o.member m" +
                         " join o.delivery d", OrderQueryDto.class)
                 .getResultList();
+    }
+
+    public List<OrderFlatDto> findAllByDto_flat() {
+        return em.createQuery(
+                "select new jpabook.jpashop2.repository.order.query.OrderFlatDto(o.id, m.name, o.orderDate, o.status, d.address, i.name, oi.orderPrice, oi.count)" +
+                        " from Order o" +
+                        " join o.member m" +
+                        " join o.delivery d" +
+                        " join o.orderItems oi" +
+                        " join oi.item i", OrderFlatDto.class
+        ).getResultList();
     }
 }
