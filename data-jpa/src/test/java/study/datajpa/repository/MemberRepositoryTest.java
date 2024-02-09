@@ -10,6 +10,7 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,8 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Rollback(value = false)
 class MemberRepositoryTest {
 
-    @Autowired
-    MemberRepository memberRepository; //스프링 데이터 JPA가 구현 클래스를를 알아서 생성해서 주입해줌
+    @Autowired MemberRepository memberRepository; //스프링 데이터 JPA가 구현 클래스를를 알아서 생성해서 주입해줌
     @Autowired TeamRepository teamRepository;
 
     @Test
@@ -131,6 +131,19 @@ class MemberRepositoryTest {
         List<MemberDto> memberDto = memberRepository.findMemberDto();
         for (MemberDto dto : memberDto) {
             System.out.println("dto = " + dto);
+        }
+    }
+
+    @Test
+    public void findByNames() {
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("BBB", 20);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> result = memberRepository.findByNames(Arrays.asList("AAA", "BBB"));
+        for (Member member : result) {
+            System.out.println("member = " + member);
         }
     }
 }
