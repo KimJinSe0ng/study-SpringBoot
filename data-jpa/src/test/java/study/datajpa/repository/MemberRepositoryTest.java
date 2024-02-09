@@ -20,10 +20,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberRepositoryTest {
 
     @Autowired
-    MemberRepository memberRepository;
+    MemberRepository memberRepository; //스프링 데이터 JPA가 구현 클래스를를 알아서 생성해서 주입해줌
 
     @Test
     public void testMember() {
+//        System.out.println("memberRepository = " + memberRepository.getClass()); //프록시 객체
         Member member = new Member("memberA");
         Member savedMember = memberRepository.save(member);
 
