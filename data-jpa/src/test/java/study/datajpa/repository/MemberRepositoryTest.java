@@ -146,4 +146,20 @@ class MemberRepositoryTest {
             System.out.println("member = " + member);
         }
     }
+
+    @Test
+    public void returnType() {
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("BBB", 20);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> result = memberRepository.findListByUsername("asdfasdf"); //없으면 빈 리스트 반환
+        System.out.println("result = " + result);
+        Member result1 = memberRepository.findMemberByUsername("asdfasdf"); //없으면 null 반환
+        System.out.println("result1 = " + result1);
+        Optional<Member> result2 = memberRepository.findOptionalByUsername("asdfasdf"); //없으면 Optional.empty
+        System.out.println("result2 = " + result2);
+
+    }
 }
