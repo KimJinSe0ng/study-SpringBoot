@@ -4,6 +4,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -160,5 +164,40 @@ class MemberRepositoryTest {
         System.out.println("result1 = " + result1);
         Optional<Member> result2 = memberRepository.findOptionalByUsername("asdfasdf"); //없으면 Optional.empty
         System.out.println("result2 = " + result2);
+    }
+
+    @Test
+    public void paging() {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        int age = 10;
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));//스프링 데이터 JPA는 0부터 시작함 -> 0페이지에서 3개 가져와
+
+        //when
+        Page<Member> page = memberRepository.findByAge(age, pageRequest); //반환 타입이 Page면 totalCount가 필요해서 자동으로 totalCount 구하는 쿼리도 날림 //내부 엔티티
+//        Slice<Member> page = memberRepository.findByAge(age, pageRequest); //반환 타입이 Slice면 페이지 개수 +1개 까지 가져옴
+//        long totalCount = memberRepository.totalCount(age); //페이징 쓰면 필요 X
+        Page<MemberDto> toMap = page.map(m -> new MemberDto(m.getId(), m.getUsername(), null)); //얘는 API로 반환해도 됨
+
+        //then
+        List<Member> content = page.getContent();//페이지의 실제 내부 데이터를 가져오고 싶으면 getContent()
+        long totalElements = page.getTotalElements();//totalCount
+
+//        for (Member member : content) {
+//            System.out.println("member = " + member);
+//        }
+//        System.out.println("totalElements = " + totalElements);
+
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(page.getTotalElements()).isEqualTo(5);
+        assertThat(page.getNumber()).isEqualTo(0); //페이징 번호
+        assertThat(page.getTotalPages()).isEqualTo(2); //총 페이지 2개
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
     }
 }
