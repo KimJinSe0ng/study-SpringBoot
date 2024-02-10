@@ -160,6 +160,5 @@ class MemberRepositoryTest {
         System.out.println("result1 = " + result1);
         Optional<Member> result2 = memberRepository.findOptionalByUsername("asdfasdf"); //없으면 Optional.empty
         System.out.println("result2 = " + result2);
-
     }
 }
