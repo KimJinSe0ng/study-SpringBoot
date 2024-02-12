@@ -6,10 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -293,14 +290,16 @@ class MemberRepositoryTest {
     }
 
     @Test
-    public void specBasic() throws Exception {
+    public void specBasic() {
         //given
         Team teamA = new Team("teamA");
         em.persist(teamA);
+
         Member m1 = new Member("m1", 0, teamA);
         Member m2 = new Member("m2", 0, teamA);
         em.persist(m1);
         em.persist(m2);
+
         em.flush();
         em.clear();
 
@@ -309,5 +308,32 @@ class MemberRepositoryTest {
         List<Member> result = memberRepository.findAll(spec);
         //then
         Assertions.assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void queryByExample() {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        //Probe
+        Member member = new Member("m1");
+        Team team = new Team("teamA"); //내부조인으로 teamA 가능
+        member.setTeam(team);
+        //ExampleMatcher 생성, age 프로퍼티는 무시
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("age");
+        Example<Member> example = Example.of(member, matcher);
+        List<Member> result = memberRepository.findAll(example);
+        //then
+        assertThat(result.size()).isEqualTo(1);
     }
 }
