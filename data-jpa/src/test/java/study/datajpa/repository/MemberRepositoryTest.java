@@ -336,4 +336,27 @@ class MemberRepositoryTest {
         //then
         assertThat(result.size()).isEqualTo(1);
     }
+
+    @Test
+    public void projections() {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        //when
+//        List<UsernameOnly> result = memberRepository.findProjectionsByUsername("m1"); //인터페이스 기반
+//        List<UsernameOnlyDto> result = memberRepository.findProjectionsByUsername("m1"); //클래스 기반 Projections
+//        List<UsernameOnlyDto> result = memberRepository.findProjectionsByUsername("m1", UsernameOnlyDto.class); //동적 Projections
+        List<NestedClosedProjections> result = memberRepository.findProjectionsByUsername("m1", NestedClosedProjections.class); //중첩 구조 Projections
+        //then
+        Assertions.assertThat(result.size()).isEqualTo(1);
+    }
 }
