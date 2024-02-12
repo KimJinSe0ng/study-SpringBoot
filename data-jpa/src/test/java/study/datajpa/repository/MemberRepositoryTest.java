@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -29,9 +30,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @Rollback(value = false)
 class MemberRepositoryTest {
 
-    @Autowired MemberRepository memberRepository; //스프링 데이터 JPA가 구현 클래스를를 알아서 생성해서 주입해줌
-    @Autowired TeamRepository teamRepository;
-    @PersistenceContext EntityManager em;
+    @Autowired
+    MemberRepository memberRepository; //스프링 데이터 JPA가 구현 클래스를를 알아서 생성해서 주입해줌
+    @Autowired
+    TeamRepository teamRepository;
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void testMember() {
@@ -286,5 +290,24 @@ class MemberRepositoryTest {
     @Test
     public void callCustom() {
         List<Member> memberCustom = memberRepository.findMemberCustom();
+    }
+
+    @Test
+    public void specBasic() throws Exception {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+        em.flush();
+        em.clear();
+
+        //when
+        Specification<Member> spec = MemberSpec.username("m1").and(MemberSpec.teamName("teamA"));
+        List<Member> result = memberRepository.findAll(spec);
+        //then
+        Assertions.assertThat(result.size()).isEqualTo(1);
     }
 }
