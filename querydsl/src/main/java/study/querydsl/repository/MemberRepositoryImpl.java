@@ -2,11 +2,13 @@ package study.querydsl.repository;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import study.querydsl.dto.MemberSearchCondition;
 import study.querydsl.dto.MemberTeamDto;
 import study.querydsl.dto.QMemberTeamDto;
@@ -98,7 +100,20 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
         //첫 번째는 알아서 카운트 쿼리 날리고, 두 번째는 내가 직접 카운트 쿼리 날림
         //토탈 카운트용 쿼리를 따로 만드는 것이 차이점
-        long total = queryFactory
+//        long total = queryFactory
+//                .select(member)
+//                .from(member)
+//                .leftJoin(member.team, team) //어떤 상황에는 조인이 필요 없을 때도 있고, 컨텐츠 쿼리는 복잡한테 카운트 쿼리는 심플하게 만들 수 있을 때
+//                //fetchResults()를 쓰면 join, where 다 붙어서 최적화가 불가능, 반대로 카운트 쿼리 먼저 후 조회되는게 없으면 컨텐츠 쿼리를 하지 않는 식으로 설계도 가능
+//                .where(
+//                        usernameEq(condition.getUsername()),
+//                        teamNameEq(condition.getTeamName()),
+//                        ageGoe(condition.getAgeGoe()),
+//                        ageLoe(condition.getAgeLoe())
+//                )
+//                .fetchCount();
+
+        JPAQuery<Member> countQuery = queryFactory
                 .select(member)
                 .from(member)
                 .leftJoin(member.team, team) //어떤 상황에는 조인이 필요 없을 때도 있고, 컨텐츠 쿼리는 복잡한테 카운트 쿼리는 심플하게 만들 수 있을 때
@@ -108,13 +123,14 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                         teamNameEq(condition.getTeamName()),
                         ageGoe(condition.getAgeGoe()),
                         ageLoe(condition.getAgeLoe())
-                )
-                .fetchCount();
+                ); //countQuery 는 fetchCount()를 호출해야 카운트를 구함, 최적화하기 위해 여기서 호출하지 않음
 
 //        List<MemberTeamDto> content = results.getResults();
 //        long total = results.getTotal();
 
-        return new PageImpl<>(content, pageable, total);
+//        return new PageImpl<>(content, pageable, total);
+        return PageableExecutionUtils.getPage(content, pageable, () -> countQuery.fetchCount());
+        //countQuery.fetchCount() 는 함수이기 때문에 컨텐츠가 작거나, 마지막 페이지인 경우 countQuery.fetchCount() 를 호출하지 않음
     }
 
     private BooleanExpression ageBetween(int ageLoe, int ageGoe) {
